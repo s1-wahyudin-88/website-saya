@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Ribath Iqra Izzul Islam</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F1A12;
+  --bg2: #162018;
+  --bg3: #1E2B20;
+  --card: #1A2A1C;
+  --card2: #223025;
+  --border: rgba(255,255,255,0.07);
+  --gold: #C49A3A;
+  --gold-light: #E2B94A;
+  --gold-pale: rgba(196,154,58,0.12);
+  --gold-glow: rgba(196,154,58,0.25);
+  --green: #4CAF80;
+  --green-pale: rgba(76,175,128,0.12);
+  --red: #E05555;
+  --red-pale: rgba(224,85,85,0.12);
+  --blue: #5B9BD5;
+  --blue-pale: rgba(91,155,213,0.12);
+  --orange: #E09040;
+  --orange-pale: rgba(224,144,64,0.12);
+  --text: #F0EDE8;
+  --text2: #A09880;
+  --text3: #6B6050;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══ LOGIN SCREEN ══════════════════════════════════════════ */
+#loginScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, rgba(196,154,58,0.08) 0%, transparent 60%),
+              var(--bg);
+  padding: 20px;
+}
+
+.login-logo {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(196,154,58,0.3);
+}
+
+.login-title {
+  font-family: 'Lora', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.login-sub {
+  font-size: 13px;
+  color: var(--text2);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 24px 36px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: var(--shadow);
+}
+
+.login-label {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pin6-dots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.pin6-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--text3);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.pin6-dot.filled { background: var(--gold); border-color: var(--gold); }
+.pin6-dot.error  { background: var(--red); border-color: var(--red); animation: shake 0.4s; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
+.login-error {
+  text-align: center;
+  font-size: 12px;
+  color: var(--red);
+  font-weight: 600;
+  height: 18px;
+  margin-bottom: 20px;
+}
+
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.nkey {
+  height: 54px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  font-family: 'Lora', serif;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.nkey:hover  { background: var(--card2); border-color: var(--gold); color: var(--gold); }
+.nkey:active { transform: scale(0.93); }
+.nkey.del    { font-size: 16px; color: var(--red); background: var(--red-pale); border-color: transparent; }
+.nkey.empty  { opacity: 0; pointer-events: none; }
+
+/* ══ MAIN APP ══════════════════════════════════════════════ */
+#app { display: none; }
+
+/* Sidebar */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+
+.sidebar-brand {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sb-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sb-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sb-name {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.sb-role {
+  font-size: 10px;
+  color: var(--gold);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 8px;
+  overflow-y: auto;
+}
+
+.nav-section {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 8px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--gold-pale); color: var(--gold); border: 1px solid rgba(196,154,58,0.2); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 99px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 12px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--red);
+  font-weight: 500;
+  transition: background 0.15s;
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+
+.logout-btn:hover { background: var(--red-pale); }
+
+/* Main content */
+.main {
+  margin-left: 220px;
+  flex: 1;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title {
+  font-family: 'Lora', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-date {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--bg);
+  border: none;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--gold-glow); }
+
+.btn-secondary {
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.btn-secondary:hover { background: var(--card2); border-color: var(--text3); }
+
+.btn-danger {
+  background: var(--red-pale);
+  color: var(--red);
+  border: 1px solid rgba(224,85,85,0.2);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.btn-danger:hover { background: rgba(224,85,85,0.2); }
+
+.page-content { padding: 24px; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* Stat mini cards */
+.stat-mini {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-mini::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-mini.gold::before  { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.stat-mini.green::before { background: linear-gradient(90deg, var(--green), #80D4A8); }
+.stat-mini.red::before   { background: linear-gradient(90deg, var(--red), #F07070); }
+.stat-mini.blue::before  { background: linear-gradient(90deg, var(--blue), #8BC0EE); }
+
+.sm-icon { font-size: 20px; margin-bottom: 8px; }
+.sm-val {
+  font-family: 'Lora', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.sm-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Warning list */
+.warning-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--orange-pale);
+  border: 1px solid rgba(224,144,64,0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.warning-item:hover { background: rgba(224,144,64,0.18); }
+.warning-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.warning-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.warning-note { font-size: 11px; color: var(--orange); margin-top: 1px; }
+.warning-arrow { margin-left: auto; color: var(--text3); font-size: 14px; }
+
+/* Form elements */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 7px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-pale);
+}
+
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 80px; }
+
+/* Star rating */
+.star-rating { display: flex; gap: 6px; }
+.star-btn {
+  font-size: 22px;
+  cursor: pointer;
+  filter: grayscale(1);
+  opacity: 0.3;
+  transition: all 0.12s;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.star-btn.on { filter: grayscale(0); opacity: 1; }
+.star-btn:hover { transform: scale(1.15); }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+  color: var(--text);
+}
+
+tr:hover td { background: var(--bg3); }
+tr:last-child td { border-bottom: none; }
+
+.td-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+.level-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lc-iqra    { background: var(--blue-pale);   color: var(--blue); }
+.lc-tahsin  { background: var(--green-pale);  color: var(--green); }
+.lc-tahfizh { background: var(--gold-pale);   color: var(--gold); }
+
+.table-actions { display: flex; gap: 6px; }
+.tbl-btn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.tbl-btn.edit:hover  { background: var(--gold-pale); border-color: var(--gold); color: var(--gold); }
+.tbl-btn.del:hover   { background: var(--red-pale);  border-color: var(--red);  color: var(--red); }
+.tbl-btn.view:hover  { background: var(--blue-pale); border-color: var(--blue); color: var(--blue); }
+
+/* Input harian */
+.hari-santri-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 9px;
+  margin-bottom: 20px;
+}
+
+.hs-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.hs-card:hover { border-color: var(--gold); background: var(--gold-pale); }
+.hs-card.done { border-color: var(--green); background: var(--green-pale); }
+.hs-card.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-glow); }
+
+.hs-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  margin: 0 auto 7px;
+}
+
+.hs-name { font-size: 11px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.hs-level { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+.hs-status {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+}
+
+.hs-status.done { background: var(--green); }
+.hs-status.pending { background: var(--orange); }
+
+/* Kehadiran toggle */
+.hadir-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.hadir-opt {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.hadir-opt.selected-h { border-color: var(--green); background: var(--green-pale); color: var(--green); }
+.hadir-opt.selected-i { border-color: var(--orange); background: var(--orange-pale); color: var(--orange); }
+.hadir-opt.selected-a { border-color: var(--red); background: var(--red-pale); color: var(--red); }
+
+/* Kalender list */
+.kal-admin-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  transition: all 0.15s;
+}
+
+.kal-admin-item:hover { border-color: var(--text3); }
+
+.kal-date-badge {
+  flex-shrink: 0;
+  width: 44px;
+  text-align: center;
+  background: var(--card2);
+  border-radius: 9px;
+  padding: 6px 4px;
+}
+
+.kbd-day { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; color: var(--text); line-height: 1; }
+.kbd-month { font-size: 9px; color: var(--text2); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+
+.kal-info { flex: 1; }
+.kal-type-chip {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 4px;
+}
+
+.ktc-phbi   { background: var(--green-pale); color: var(--green); }
+.ktc-wisuda { background: var(--gold-pale); color: var(--gold); }
+.ktc-psb    { background: var(--blue-pale); color: var(--blue); }
+.ktc-libur  { background: var(--red-pale); color: var(--red); }
+.ktc-mabit  { background: rgba(180,100,220,0.12); color: #B464DC; }
+.ktc-raport { background: var(--gold-pale); color: var(--gold); }
+.ktc-aktif  { background: var(--green-pale); color: var(--green); }
+
+.kal-title-text { font-size: 13px; font-weight: 600; color: var(--text); }
+.kal-note-text  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* Statistik page */
+.periode-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.periode-label {
+  font-family: 'Lora', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.progress-row:last-child { border-bottom: none; }
+.pr-name { font-size: 13px; color: var(--text); width: 130px; flex-shrink: 0; }
+.pr-bar-wrap { flex: 1; height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.pr-bar { height: 100%; background: linear-gradient(90deg, var(--green), #80D4A8); border-radius: 99px; }
+.pr-val { font-size: 12px; color: var(--green); font-weight: 700; width: 36px; text-align: right; }
+
+/* Pengaturan */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.setting-item:last-child { border-bottom: none; }
+.setting-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.setting-desc  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  animation: popIn 0.25s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.modal-title {
+  font-family: 'Lora', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: none;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { background: var(--red-pale); color: var(--red); }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  z-index: 9999;
+  box-shadow: var(--shadow);
+  max-width: 300px;
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { border-color: var(--green); }
+.toast.error   { border-color: var(--red); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* Pages */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Search in admin */
+.admin-search {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.admin-search input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px 10px 38px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.admin-search input:focus { border-color: var(--gold); }
+.admin-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
+
+/* Announce preview */
+.ann-preview {
+  background: var(--green);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: white;
+  font-weight: 500;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bulk attendance */
+.bulk-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.bulk-row:last-child { border-bottom: none; }
+.bulk-name { font-size: 13px; color: var(--text); flex: 1; }
+.bulk-toggle { display: flex; gap: 6px; }
+.bulk-opt {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.bulk-opt.h.sel { background: var(--green-pale); border-color: var(--green); color: var(--green); }
+.bulk-opt.i.sel { background: var(--orange-pale); border-color: var(--orange); color: var(--orange); }
+.bulk-opt.a.sel { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     ⚙️  SHARED DATA — Diakses admin & diekspor ke 2 page publik
+══════════════════════════════════════ -->
+<script>
+// PIN ADMIN — ganti di sini
+const ADMIN_PIN = "123456";
+
+// Shared state (dalam produksi, simpan ke localStorage/database)
+let APP = {
+
+  // Info lembaga → terhubung ke footer home page & halaman santri
+  lembaga: {
+    nama: "Ribath Iqra Izzul Islam",
+    alamat: "Masjid Izzul Islam · Jl. Percetakan Negara IV C, Johar Baru, Jakarta Pusat",
+    wa: "085813318975",
+    instagram: "@ribathiqraizzulislam",
+    email: "syahrulwahyudin5000@gmail.com",
+  },
+
+  // Pengumuman → terhubung ke strip home page
+  pengumuman: "📢 Tasmi' Semester 3 akan dilaksanakan pada 25 April 2025  •  🎉 Selamat kepada Faris & Zaid yang khatam Juz 30!  •  📅 Libur Isra Mi'raj: 28 Januari 2025",
+
+  // Kalender → terhubung ke section kalender home page
+  kalender: [
+    { id: 1,  hari: "28", bulan: "Jan", type: "phbi",   icon: "🌙", judul: "Libur Isra Mi'raj",          catatan: "Tidak ada kegiatan belajar" },
+    { id: 2,  hari: "8",  bulan: "Mar", type: "mabit",  icon: "🌟", judul: "Mabit Ramadhan",              catatan: "Santri SD–SMP, bermalam di masjid" },
+    { id: 3,  hari: "24", bulan: "Mar", type: "libur",  icon: "🌙", judul: "Awal Libur Ramadhan",         catatan: "Kegiatan belajar diliburkan" },
+    { id: 4,  hari: "7",  bulan: "Apr", type: "aktif",  icon: "✅", judul: "Masuk Kembali",               catatan: "Belajar aktif pasca Lebaran" },
+    { id: 5,  hari: "25", bulan: "Apr", type: "wisuda", icon: "🎓", judul: "Tasmi' & Ujian Semester 3",   catatan: "Panel tasmi' + ujian lisan" },
+    { id: 6,  hari: "10", bulan: "Mei", type: "raport", icon: "📋", judul: "Pembagian Rapor Semester 3",  catatan: "Dihadiri orang tua wali santri" },
+    { id: 7,  hari: "12", bulan: "Mei", type: "psb",    icon: "🎉", judul: "Penerimaan Santri Baru",      catatan: "Tes penempatan batch baru" },
+    { id: 8,  hari: "1",  bulan: "Jun", type: "aktif",  icon: "✅", judul: "Awal Semester 4",             catatan: "Masuk semester baru" },
+    { id: 9,  hari: "17", bulan: "Agt", type: "phbi",   icon: "🇮🇩", judul: "Libur HUT RI",               catatan: "Tidak ada kegiatan belajar" },
+    { id: 10, hari: "5",  bulan: "Sep", type: "wisuda", icon: "🎓", judul: "Wisuda & Khataman Juz 30",    catatan: "Upacara wisuda santri khatam" },
+  ],
+
+  // Daftar santri → terhubung ke grid pilih santri home page
+  santri: [
+    { id: 1,  nama: "Ahmad Faris Abdillah",  level: "Tahsin",  pin: "1234", avatar: "AF", warna: "#2A4A35" },
+    { id: 2,  nama: "Bilal Yusuf Ramadhan",  level: "Iqra",    pin: "2345", avatar: "BY", warna: "#2A3A4A" },
+    { id: 3,  nama: "Dzikri Hakim Maulana",  level: "Tahfizh", pin: "3456", avatar: "DH", warna: "#4A3A2A" },
+    { id: 4,  nama: "Fajri Nur Ihsan",       level: "Iqra",    pin: "4567", avatar: "FN", warna: "#4A2A2A" },
+    { id: 5,  nama: "Ghifari Salam",         level: "Tahsin",  pin: "5678", avatar: "GS", warna: "#3A2A4A" },
+    { id: 6,  nama: "Hasan Al-Banna",        level: "Tahfizh", pin: "6789", avatar: "HA", warna: "#2A4A35" },
+    { id: 7,  nama: "Ibrahim Fatih",         level: "Iqra",    pin: "7890", avatar: "IF", warna: "#2A3A4A" },
+    { id: 8,  nama: "Jabir Abdurrahman",     level: "Tahsin",  pin: "1111", avatar: "JA", warna: "#4A3A2A" },
+    { id: 9,  nama: "Khalid Umar Barakah",   level: "Tahfizh", pin: "2222", avatar: "KU", warna: "#4A2A2A" },
+    { id: 10, nama: "Luthfi Azzam",          level: "Iqra",    pin: "3333", avatar: "LA", warna: "#3A2A4A" },
+  ],
+
+  // Data harian per santri → terhubung ke halaman progres santri
+  // Format: { "YYYY-MM-DD": { [santriId]: { kehadiran, quran, tarbiyah, catatan, akhlak } } }
+  harian: {
+    "2025-04-07": {
+      1: {
+        kehadiran: "hadir",
+        quran: { posisi: "سورة الفلق", tilawah: "½ hal · Lancar", hafalan: "Al-Falaq ✔", target: "An-Nas" },
+        tarbiyah: { modul: "Mengenal Allah", topik: "Asmaul Husna: Al-'Alim", respons: "Aktif & antusias" },
+        catatan: "Faris hari ini sangat fokus. Makhraj huruf ض membaik. Perlu latihan harakat panjang.",
+        akhlak: { adab: 4, konsentrasi: 5, interaksi: 4, perlengkapan: 5 },
+      },
+      2: {
+        kehadiran: "hadir",
+        quran: { posisi: "Iqra Jilid 3 hal 12", tilawah: "—", hafalan: "—", target: "Selesai Jilid 3" },
+        tarbiyah: { modul: "Mengenal Allah", topik: "Asmaul Husna: Al-'Alim", respons: "Diam tapi menyimak" },
+        catatan: "Bilal membaca lebih lancar dari minggu lalu. Perlu dorongan lebih aktif bertanya.",
+        akhlak: { adab: 5, konsentrasi: 3, interaksi: 3, perlengkapan: 4 },
+      },
+    },
+  },
+
+  // Statistik 2 pekanan → otomatis dihitung dari data harian
+  // (dihitung ulang saat publish)
+  statistikPublished: {
+    periode: "24 Mar – 6 Apr 2025",
+    totalSantri: 10,
+    santriAktif: 9,
+    rataKehadiran: 88,
+    totalHafalaanBaru: 5,
+    santriKhatamJuz30: 2,
+  },
+};
+
+// Helper: next ID
+function nextId(arr) { return arr.length ? Math.max(...arr.map(x => x.id)) + 1 : 1; }
+
+// Auto-generate initial avatar from nama
+function makeAvatar(nama) {
+  const parts = nama.trim().split(' ');
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return parts[0].slice(0,2).toUpperCase();
+}
+
+// Compute statistik otomatis dari data harian
+function hitungStatistik(periodeStart, periodeEnd) {
+  // Simplified: hitung dari semua hari di range
+  const keys = Object.keys(APP.harian);
+  let totalHadir = 0, totalSantriHari = 0, hafalanBaru = 0;
+  const santriAktifSet = new Set();
+
+  keys.forEach(tgl => {
+    if (tgl >= periodeStart && tgl <= periodeEnd) {
+      const hari = APP.harian[tgl];
+      Object.entries(hari).forEach(([sid, d]) => {
+        totalSantriHari++;
+        if (d.kehadiran === 'hadir') { totalHadir++; santriAktifSet.add(sid); }
+        if (d.quran?.hafalan && d.quran.hafalan !== '—') hafalanBaru++;
+      });
+    }
+  });
+
+  return {
+    santriAktif: santriAktifSet.size || APP.santri.length,
+    rataKehadiran: totalSantriHari ? Math.round((totalHadir / totalSantriHari) * 100) : 88,
+    totalHafalaanBaru: hafalanBaru,
+  };
+}
+</script>
+
+<!-- ══════════════════════════════════════ LOGIN ══ -->
+  <div id="login-screen">
+    <h2>📖 Panel Admin Ribath Iqra Izzul Islam · Johar Baru</h2>
+    <p>Masukkan PIN Admin (6 digit)</p>
+    <input type="password" id="pin-display" readonly>
+    <div id="keypad">
+      <button class="key" data-val="1">1</button>
+      <button class="key" data-val="2">2</button>
+      <button class="key" data-val="3">3</button>
+      <button class="key" data-val="4">4</button>
+      <button class="key" data-val="5">5</button>
+      <button class="key" data-val="6">6</button>
+      <button class="key" data-val="7">7</button>
+      <button class="key" data-val="8">8</button>
+      <button class="key" data-val="9">9</button>
+      <button class="key" data-val="0">0</button>
+      <button id="btn-backspace" class="key">⌫</button>
+    </div>
+    <button id="btn-login-submit">Masuk</button>
+  </div>
+
+  <div id="admin-panel" style="display:none;">
+    <header>📖 Ribath Iqra Panel Ustadz Utama</header>
+    <nav id="main-nav">
+      <button data-section="dashboard">🏠 Dashboard</button>
+      <button data-section="home">Home Page</button>
+      <button data-section="pengumuman">📢 Pengumuman</button>
+      <button data-section="kalender">📅 Kalender</button>
+      <button data-section="statistik">📊 Statistik</button>
+      <button data-section="santri">Santri 👦 Kelola Santri</button>
+      <button data-section="harian">📝 Input Harian</button>
+      <button data-section="pengaturan">0 Sistem ⚙️ Pengaturan</button>
+      <button id="btn-logout">🚪 Keluar</button>
+    </nav>
+
+    <main id="content">
+      <section id="sec-dashboard">
+        <h3>⚠️ Belum Diisi Hari Ini 📅 Event Mendatang ⚡ Shortcut</h3>
+        <div class="shortcuts">
+          <button onclick="switchSection('harian')">📝 Input Harian Hari Ini</button>
+          <button onclick="switchSection('santri')">👦 Kelola Santri</button>
+          <button onclick="switchSection('statistik')">📊 Publish Statistik</button>
+        </div>
+      </section>
+
+      <section id="sec-pengumuman" style="display:none;">
+        <h3>📢 Teks Pengumuman Berjalan</h3>
+        <textarea id="pengumuman-text" placeholder="Isi pengumuman (pisah dengan •)"></textarea>
+        <p>Preview di home page: <span id="pengumuman-preview"></span></p>
+        <button id="btn-save-pengumuman">💾 Simpan & Publish</button>
+        <button id="btn-reset-pengumuman">↺ Reset</button>
+      </section>
+
+      <section id="sec-kalender" style="display:none;">
+        <h3>📅 Kalender</h3>
+        <button id="btn-add-event">＋ Tambah Event</button>
+        <table id="kalender-table">
+          <thead><tr><th>Hari</th><th>Bulan</th><th>Judul</th><th>Tipe</th><th>Aksi</th></tr></thead>
+          <tbody id="kalender-body"></tbody>
+        </table>
+      </section>
+
+      <section id="sec-statistik" style="display:none;">
+        <h3>📊 Statistik 2 Pekanan</h3>
+        <label>Periode Mulai: <input type="date" id="stat-start"></label>
+        <label>Periode Selesai: <input type="date" id="stat-end"></label>
+        <label>Label Periode: <input type="text" id="stat-label" placeholder="tampil di home page"></label>
+        <button id="btn-calc-stat">🔄 Hitung Otomatis dari Data Harian</button>
+        <div id="stat-preview"></div>
+        <button id="btn-publish-stat">🚀 Publish ke Home Page</button>
+      </section>
+
+      <section id="sec-santri" style="display:none;">
+        <h3>🔍 Kelola Santri</h3>
+        <button id="btn-open-add-santri">＋ Tambah Santri</button>
+        <table>
+          <thead><tr><th>Santri</th><th>Level</th><th>PIN</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="santri-body"></tbody>
+        </table>
+      </section>
+
+      <section id="sec-harian" style="display:none;">
+        <h3>📝 Input Harian</h3>
+        <label>Tanggal: <input type="date" id="harian-tgl"></label>
+        <button id="btn-bulk-kehadiran">☑️ Kehadiran Massal</button>
+        <button id="btn-reload-harian">🔄 Muat Ulang</button>
+        <div id="harian-form-container">
+          <!-- Form harian akan di-generate oleh JS -->
+        </div>
+      </section>
+
+      <section id="sec-pengaturan" style="display:none;">
+        <h3>🏫 Info Lembaga</h3>
+        <input id="lembaga-nama" placeholder="Nama Lembaga">
+        <input id="lembaga-alamat" placeholder="Alamat">
+        <input id="lembaga-wa" placeholder="Nomor WhatsApp">
+        <input id="lembaga-ig" placeholder="Instagram">
+        <button id="btn-save-lembaga">💾 Simpan Info Lembaga</button>
+
+        <h3>🔐 Keamanan & Data</h3>
+        <button id="btn-open-change-pin">Ganti PIN Admin</button>
+        <button id="btn-export">⬇️ Export</button>
+        <button id="btn-reset-all">🔄 Reset Periode</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- ================= MODAL TAMBAH SANTRI ================= -->
+  <div id="modal-santri" style="display:none;">
+    <h3>Tambah Santri ✕</h3>
+    <input id="modal-santri-nama" placeholder="Nama Lengkap">
+    <select id="modal-santri-level">
+      <option value="Iqra">Iqra</option>
+      <option value="Tahsin">Tahsin</option>
+      <option value="Tahfizh">Tahfizh</option>
+    </select>
+    <input id="modal-santri-pin" type="password" maxlength="4" placeholder="PIN (4 digit)">
+    <button id="modal-santri-cancel">Batal</button>
+    <button id="modal-santri-save">💾 Simpan</button>
+  </div>
+
+  <!-- ================= MODAL TAMBAH EVENT ================= -->
+  <div id="modal-event" style="display:none;">
+    <h3>Tambah Event ✕</h3>
+    <input id="modal-event-tgl" type="date">
+    <input id="modal-event-bulan" placeholder="Bulan">
+    <input id="modal-event-judul" placeholder="Judul Event">
+    <select id="modal-event-tipe">
+      <option value="PHBI">PHBI</option>
+      <option value="Wisuda">Wisuda</option>
+      <option value="PSB">PSB</option>
+      <option value="Libur">Libur</option>
+      <option value="Mabit">Mabit</option>
+      <option value="Rapor">Rapor</option>
+    </select>
+    <input id="modal-event-icon" placeholder="Icon (emoji)">
+    <textarea id="modal-event-catatan" placeholder="Catatan"></textarea>
+    <button id="modal-event-cancel">Batal</button>
+    <button id="modal-event-save">💾 Simpan</button>
+  </div>
+
+  <!-- ================= MODAL GANTI PIN ================= -->
+  <div id="modal-pin" style="display:none;">
+    <h3>🔐 Ganti PIN Admin ✕</h3>
+    <input id="modal-pin-baru" type="password" maxlength="6" placeholder="PIN Baru (6 digit)">
+    <input id="modal-pin-konfirmasi" type="password" maxlength="6" placeholder="Konfirmasi PIN">
+    <button id="modal-pin-cancel">Batal</button>
+    <button id="modal-pin-save">💾 Ganti PIN</button>
+  </div>
+
+  <!-- ================= SCRIPT LOGIKA UTAMA ================= -->
+  <script>
+    /**
+     * KONFIGURASI UTAMA
+     * Ganti dengan URL Web App dari Google Apps Script Anda
+     */
+    const API_URL = "https://script.google.com/macros/s/AKfycbzkuT9IDZ2THmNK0Eeo8453ZREM9NqI970SYx1KeAYM-jocPL8nof4U7tBlCPmBEpku/exec";
+    let adminToken = sessionStorage.getItem("admin_token");
+    let currentPinInput = "";
+
+    // ── Helper API ──────────────────────────────────────────────
+    async function api(action, method = "GET", payload = {}) {
+      if (!adminToken && action !== "validateAdminPin") {
+        alert("Sesi habis. Silakan login ulang.");
+        logout();
+        return null;
+      }
+
+      let url = `${API_URL}?action=${action}`;
+      const options = { method };
+
+      if (method === "GET") {
+        if (adminToken) url += `&token=${encodeURIComponent(adminToken)}`;
+        Object.entries(payload).forEach(([k, v]) => url += `&${k}=${encodeURIComponent(v)}`);
+        const res = await fetch(url);
+        return res.json();
+      } else {
+        // doPost GAS butuh text/plain untuk hindari CORS preflight
+        options.headers = { "Content-Type": "text/plain;charset=utf-8" };
+        options.body = JSON.stringify({ action, token: adminToken, ...payload });
+        const res = await fetch(API_URL, options);
+        return res.json();
+      }
+    }
+
+    // ── Auth & Session ──────────────────────────────────────────
+    function handleKey(val) {
+      if (currentPinInput.length < 6) {
+        currentPinInput += val;
+        document.getElementById("pin-display").value = "•".repeat(currentPinInput.length);
+      }
+    }
+    function handleBackspace() {
+      currentPinInput = currentPinInput.slice(0, -1);
+      document.getElementById("pin-display").value = "•".repeat(currentPinInput.length);
+    }
+
+    document.querySelectorAll(".key").forEach(btn => {
+      btn.addEventListener("click", () => handleKey(btn.dataset.val));
+    });
+    document.getElementById("btn-backspace").addEventListener("click", handleBackspace);
+
+    document.getElementById("btn-login-submit").addEventListener("click", async () => {
+      const res = await api("validateAdminPin", "POST", { pin: currentPinInput });
+      if (res && res.success && res.data.valid) {
+        adminToken = res.data.token;
+        sessionStorage.setItem("admin_token", adminToken);
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
+        currentPinInput = "";
+        loadAllData();
+      } else {
+        alert("PIN Admin salah!");
+        currentPinInput = "";
+        document.getElementById("pin-display").value = "";
+      }
+    });
+
+    document.getElementById("btn-logout").addEventListener("click", logout);
+    function logout() {
+      sessionStorage.removeItem("admin_token");
+      adminToken = null;
+      location.reload();
+    }
+
+    // ── Navigasi ────────────────────────────────────────────────
+    function switchSection(secId) {
+      document.querySelectorAll("main section").forEach(s => s.style.display = "none");
+      const target = document.getElementById(`sec-${secId}`);
+      if (target) target.style.display = "block";
+    }
+
+    document.querySelectorAll("#main-nav button[data-section]").forEach(btn => {
+      btn.addEventListener("click", () => switchSection(btn.dataset.section));
+    });
+
+    // ── Load Data ───────────────────────────────────────────────
+    async function loadAllData() {
+      loadSantri();
+      loadKalender();
+      loadPengumuman();
+      loadLembaga();
+    }
+
+    async function loadSantri() {
+      const res = await api("getAllSantri");
+      if (!res?.success) return;
+      const tbody = document.getElementById("santri-body");
+      tbody.innerHTML = "";
+      res.data.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.nama}</td><td>${s.level}</td><td>${s.pin}</td>
+          <td>${s.aktif ? "Aktif" : "Nonaktif"}</td>
+          <td><button class="btn-del-santri" data-id="${s.id}">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll(".btn-del-santri").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (confirm("Hapus santri ini?")) {
+            await api("deleteSantri", "POST", { id: parseInt(btn.dataset.id) });
+            loadSantri();
+          }
+        });
+      });
+    }
+
+    async function loadKalender() {
+      const res = await api("getKalender");
+      if (!res?.success) return;
+      const tbody = document.getElementById("kalender-body");
+      tbody.innerHTML = "";
+      res.data.forEach(k => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${k.hari}</td><td>${k.bulan}</td><td>${k.judul}</td><td>${k.type}</td>
+                        <td><button class="btn-del-event" data-id="${k.id}">🗑️</button></td>`;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll(".btn-del-event").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          await api("deleteKalender", "POST", { id: parseInt(btn.dataset.id) });
+          loadKalender();
+        });
+      });
+    }
+
+    async function loadPengumuman() {
+      const res = await api("getPengumuman");
+      if (res?.success) {
+        document.getElementById("pengumuman-text").value = res.data.teks || "";
+        document.getElementById("pengumuman-preview").textContent = res.data.teks || "";
+      }
+    }
+
+    async function loadLembaga() {
+      const res = await api("getLembaga");
+      if (res?.success) {
+        document.getElementById("lembaga-nama").value = res.data.nama || "";
+        document.getElementById("lembaga-alamat").value = res.data.alamat || "";
+        document.getElementById("lembaga-wa").value = res.data.wa || "";
+        document.getElementById("lembaga-ig").value = res.data.instagram || "";
+      }
+    }
+
+    // ── Form Handlers ───────────────────────────────────────────
+    // Santri
+    document.getElementById("btn-open-add-santri").addEventListener("click", () => document.getElementById("modal-santri").style.display = "block");
+    document.getElementById("modal-santri-cancel").addEventListener("click", () => document.getElementById("modal-santri").style.display = "none");
+    document.getElementById("modal-santri-save").addEventListener("click", async () => {
+      const data = {
+        nama: document.getElementById("modal-santri-nama").value,
+        level: document.getElementById("modal-santri-level").value,
+        pin: document.getElementById("modal-santri-pin").value
+      };
+      if (!data.nama || data.pin.length !== 4) return alert("Lengkapi data & PIN 4 digit");
+      const res = await api("saveSantri", "POST", { data });
+      if (res?.success) {
+        document.getElementById("modal-santri").style.display = "none";
+        loadSantri();
+      }
+    });
+
+    // Event
+    document.getElementById("btn-add-event").addEventListener("click", () => document.getElementById("modal-event").style.display = "block");
+    document.getElementById("modal-event-cancel").addEventListener("click", () => document.getElementById("modal-event").style.display = "none");
+    document.getElementById("modal-event-save").addEventListener("click", async () => {
+      const data = {
+        hari: document.getElementById("modal-event-tgl").value,
+        bulan: document.getElementById("modal-event-bulan").value,
+        judul: document.getElementById("modal-event-judul").value,
+        type: document.getElementById("modal-event-tipe").value,
+        icon: document.getElementById("modal-event-icon").value,
+        catatan: document.getElementById("modal-event-catatan").value
+      };
+      const res = await api("saveKalender", "POST", { data });
+      if (res?.success) {
+        document.getElementById("modal-event").style.display = "none";
+        loadKalender();
+      }
+    });
+
+    // Pengumuman
+    document.getElementById("pengumuman-text").addEventListener("input", (e) => {
+      document.getElementById("pengumuman-preview").textContent = e.target.value;
+    });
+    document.getElementById("btn-save-pengumuman").addEventListener("click", async () => {
+      const res = await api("savePengumuman", "POST", { teks: document.getElementById("pengumuman-text").value });
+      if (res?.success) alert("Pengumuman berhasil disimpan!");
+    });
+
+    // Statistik
+    document.getElementById("btn-publish-stat").addEventListener("click", async () => {
+      const start = document.getElementById("stat-start").value;
+      const end = document.getElementById("stat-end").value;
+      const label = document.getElementById("stat-label").value;
+      if (!start || !end || !label) return alert("Isi periode & label");
+      const res = await api("publishStatistik", "POST", { start, end, label });
+      if (res?.success) {
+        alert("Statistik berhasil dipublish!");
+        document.getElementById("stat-preview").innerHTML = JSON.stringify(res.data, null, 2);
+      }
+    });
+
+    // Lembaga
+    document.getElementById("btn-save-lembaga").addEventListener("click", async () => {
+      const data = {
+        nama: document.getElementById("lembaga-nama").value,
+        alamat: document.getElementById("lembaga-alamat").value,
+        wa: document.getElementById("lembaga-wa").value,
+        instagram: document.getElementById("lembaga-ig").value
+      };
+      await api("saveLembaga", "POST", { data });
+      alert("Info lembaga disimpan");
+    });
+
+    // Ganti PIN (Catatan: PIN Admin hanya bisa diganti di backend konstanta. 
+    // Jika ingin ganti via UI, perlu modifikasi backend. Ini hanya placeholder UI)
+    document.getElementById("btn-open-change-pin").addEventListener("click", () => document.getElementById("modal-pin").style.display = "block");
+    document.getElementById("modal-pin-cancel").addEventListener("click", () => document.getElementById("modal-pin").style.display = "none");
+    document.getElementById("modal-pin-save").addEventListener("click", () => {
+      alert("Untuk keamanan, ganti PIN_ADMIN langsung di file ribath-apps-script.js baris paling atas, lalu deploy ulang.");
+      document.getElementById("modal-pin").style.display = "none";
+    });
+
+    // Export & Reset UI
+    document.getElementById("btn-export").addEventListener("click", async () => {
+      const santri = await api("getAllSantri");
+      const daily = await api("getHarianRange", "GET", { id: 1, start: "2020-01-01", end: "2099-12-31" }); // Contoh fetch
+      const blob = new Blob([JSON.stringify({ santri: santri?.data, harian: daily?.data }, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `backup_ribath_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    });
+
+    // Inisialisasi
+    if (adminToken) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+      loadAllData();
+    }
+  </script>
+</body>
+</html>
