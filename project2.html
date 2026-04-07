@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>🕌 Ribath Input Harian</title>
+<style>
+/* === CSS INLINE (RESPONSIVE & MOBILE FIRST) === */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a1a; line-height: 1.5; padding: 12px; padding-bottom: 80px; }
+.app-container { max-width: 640px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); overflow: hidden; }
+.app-header { background: linear-gradient(135deg, #2E7D32, #1B5E20); color: white; padding: 18px 16px; text-align: center; }
+.app-header h1 { font-size: 1.35rem; margin-bottom: 4px; font-weight: 700; }
+.subtitle { font-size: 0.85rem; opacity: 0.9; }
+.form-step { padding: 16px; display: none; }
+.form-step.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #1B5E20; font-size: 0.95rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 12px; border: 1px solid #d0d5dd; border-radius: 8px; font-size: 1rem; background: #fafbfc; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #2E7D32; background: #fff; box-shadow: 0 0 0 3px rgba(46,125,50,0.15); }
+.hint { font-size: 0.8rem; color: #666; margin-top: 4px; }
+.santri-checkbox-list { max-height: 220px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; background: #f9fafb; }
+.santri-item { display: flex; align-items: center; padding: 10px 8px; margin: 4px 0; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer; }
+.santri-item input[type="checkbox"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+.santri-meta { font-size: 0.8rem; color: #6b7280; margin-left: auto; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; }
+.tab-nav { display: flex; background: #f8fafc; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 10; }
+.tab-nav.hidden { display: none; }
+.tab-btn { flex: 1; padding: 12px 6px; border: none; background: none; font-weight: 600; font-size: 0.9rem; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab-btn.active { color: #1B5E20; border-bottom-color: #2E7D32; background: #fff; }
+.tab-content { padding: 16px; display: none; }
+.tab-content.active { display: block; }
+.section-title { font-size: 1.1rem; font-weight: 700; color: #1B5E20; margin-bottom: 8px; }
+.santri-inputs { display: flex; flex-direction: column; gap: 14px; }
+.santri-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #e5e7eb; }
+.card-header h4 { color: #1B5E20; font-size: 1rem; }
+.ready-checkbox { display: flex; align-items: center; font-size: 0.85rem; color: #2E7D32; cursor: pointer; }
+.ready-checkbox input { margin-right: 6px; width: 16px; height: 16px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.quran-field { display: none; margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 6px; }
+.quran-field.active { display: block; }
+.btn { width: 100%; padding: 13px 16px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.2s; margin-top: 10px; }
+.btn:active { transform: scale(0.98); opacity: 0.9; }
+.btn-primary { background: #2E7D32; color: white; }
+.btn-secondary { background: #9ca3af; color: white; }
+.btn-success { background: #1B5E20; color: white; }
+.action-bar { padding: 16px; background: #f8fafc; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; position: fixed; bottom: 0; left: 0; right: 0; max-width: 664px; margin: 0 auto; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); z-index: 20; }
+.action-bar.hidden { display: none; }
+.loading-overlay, .notification { position: fixed; top: 0; left: 0; right: 0; padding: 14px 16px; text-align: center; z-index: 1000; font-weight: 500; transform: translateY(-100%); transition: transform 0.3s ease; }
+.loading-overlay.visible { transform: translateY(0); }
+.loading-overlay { background: #2E7D32; color: white; }
+.notification { background: #fca5a5; color: #7f1d1d; }
+.notification.success { background: #bbf7d0; color: #14532d; }
+.notification.error { background: #fecaca; color: #7f1d1d; }
+.notification.visible { transform: translateY(0); }
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; border-top-color: #fff; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 480px) {
+body { padding: 8px; padding-bottom: 75px; }
+.field-row { grid-template-columns: 1fr; }
+.tab-btn { font-size: 0.82rem; padding: 10px 2px; }
+.app-container { border-radius: 8px; }
+}
+/* ✅ TAMBAHAN: UI TOGGLE & MANAJEMEN */
+.view-toggle { position: absolute; top: 10px; right: 12px; display: flex; gap: 6px; }
+.view-toggle button { padding: 5px 10px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); color: white; border-radius: 20px; cursor: pointer; }
+.view-toggle button.active { background: white; color: #1B5E20; font-weight: bold; }
+.bulk-bar { margin-bottom:12px; padding:10px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0; }
+.bulk-bar label { font-size:0.82rem; font-weight:600; color:#1B5E20; display:block; margin-bottom:6px; }
+.m-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+.m-table th, .m-table td { padding: 8px 6px; border: 1px solid #e5e7eb; text-align: left; }
+.m-table th { background: #f8fafc; color: #1B5E20; font-weight: 600; }
+.m-select { width: 100%; padding: 5px; font-size: 0.8rem; border: 1px solid #d0d5dd; border-radius: 4px; }
+.m-btn { padding: 4px 8px; font-size: 0.75rem; border: none; border-radius: 4px; cursor: pointer; }
+.m-btn-sv { background: #dcfce7; color: #166534; }
+@media (max-width: 480px) { .m-table { display: block; overflow-x: auto; } }
+</style>
+</head>
+<body>
+<div class="app-container">
+<header class="app-header">
+<h1>🕌 Ribath Input Harian</h1>
+<p class="subtitle">Program Halaqah Qur'ani — Izzul Islam</p>
+</header>
+<!-- FORM 1: KEHADIRAN -->
+<section id="step1" class="form-step active">
+<h2 class="section-title">📋 Form 1: Kehadiran</h2>
+<div class="form-group"><label for="tanggal">Tanggal *</label><input type="date" id="tanggal" required></div>
+<div class="form-group"><label for="kelompok">Kelompok *</label>
+<select id="kelompok" required onchange="loadSantriList()">
+<option value="">-- Pilih --</option>
+<option value="A">Kelompok A</option>
+<option value="B">Kelompok B</option>
+</select>
+</div>
+<div class="form-group"><label for="namaUstadz">Nama Ustadz/Ustadzah *</label>
+<input type="text" id="namaUstadz" list="ustadzList" placeholder="Ketik atau pilih..." required>
+<datalist id="ustadzList">
+<option value="Ustadzah Shahibatul Hujjah">
+<option value="Ustadz Syahrul Wahyudin">
+<option value="Ustadz Syarif Hidayat">
+</datalist>
+</div>
+<div class="form-group"><label>Santri Hadir (centang) *</label>
+<div id="santriList" class="santri-checkbox-list"><p class="hint">Pilih Kelompok untuk memuat daftar.</p></div>
+</div>
+<button type="button" class="btn btn-primary" onclick="goToStep2()">Lanjut ke Input Detail →</button>
+</section>
+<!-- NAVIGASI TAB -->
+<nav id="tabNav" class="tab-nav hidden">
+<button class="tab-btn active" data-tab="quran">📖 Al-Qur'an</button>
+<button class="tab-btn" data-tab="tarbiyah">🌱 Tarbiyah</button>
+<button class="tab-btn" data-tab="perilaku">✨ Perilaku</button>
+</nav>
+<!-- TAB 1: AL-QUR'AN -->
+<section id="tab-quran" class="tab-content active">
+<h2 class="section-title">📖 Progres Al-Qur'an</h2>
+<p class="hint">Isi untuk setiap santri hadir.</p>
+
+<!-- ✅ INJEKSI 1: Bulk Input Al-Qur'an -->
+<div id="bulk-quran-bar" style="margin-bottom:12px; padding:10px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+  <label style="font-size:0.82rem; font-weight:600; color:#1B5E20; display:block; margin-bottom:6px;">⚡ Atur Semua Santri (Al-Qur'an):</label>
+  <select id="bulk-quran-prog" onchange="toggleBulkQuranFields(this.value)" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #d0d5dd; border-radius:6px;">
+    <option value="">-- Pilih Program --</option>
+    <option value="Iqra">Iqra</option><option value="Tahsin">Tahsin</option><option value="Tahfidz">Tahfidz</option><option value="Tilawah">Tilawah</option>
+  </select>
+  <div id="bulk-quran-fields" class="field-row" style="display:none; margin-bottom:8px;"></div>
+  <button type="button" onclick="applyBulkQuran()" style="width:100%; padding:8px; background:#2E7D32; color:white; border:none; border-radius:6px; cursor:pointer;">✅ Terapkan ke Semua</button>
+</div>
+
+<div id="quranInputs" class="santri-inputs"></div>
+</section>
+<!-- TAB 2: TARBIYAH -->
+<section id="tab-tarbiyah" class="tab-content">
+<h2 class="section-title">🌱 Tarbiyah Islamiyah</h2>
+<p class="hint">Hanya isi yang siap berpikir.</p>
+
+<!-- ✅ INJEKSI 2: Bulk Input Tarbiyah -->
+<div id="bulk-tarbiyah-bar" style="margin-bottom:12px; padding:10px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+  <label style="font-size:0.82rem; font-weight:600; color:#1B5E20; display:block; margin-bottom:6px;">⚡ Atur Semua Santri (Tarbiyah):</label>
+  <label class="ready-checkbox" style="margin-bottom:8px; display:flex;"><input type="checkbox" id="bulk-tar-ready"> Centang Semua "Siap"</label>
+  <input id="bulk-tar-mod" placeholder="Modul / Tema" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #d0d5dd; border-radius:6px;">
+  <div class="field-row" style="margin-bottom:8px;">
+    <select id="bulk-tar-pah"><option value="">Pemahaman</option><option value="Paham">Paham</option><option value="Belum">Belum</option><option value="N/A">N/A</option></select>
+    <select id="bulk-tar-res"><option value="">Respons</option><option value="Sangat antusias">Sangat antusias</option><option value="Cukup">Cukup</option><option value="Kurang">Kurang</option></select>
+  </div>
+  <button type="button" onclick="applyBulkTarbiyah()" style="width:100%; padding:8px; background:#2E7D32; color:white; border:none; border-radius:6px; cursor:pointer;">✅ Terapkan ke Semua</button>
+</div>
+
+<div id="tarbiyahInputs" class="santri-inputs"></div>
+</section>
+<!-- TAB 3: PERILAKU -->
+<section id="tab-perilaku" class="tab-content">
+<h2 class="section-title">✨ Perilaku & Tindak Lanjut</h2>
+
+<!-- ✅ INJEKSI 3: Bulk Input Perilaku -->
+<div id="bulk-perilaku-bar" style="margin-bottom:12px; padding:10px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+  <label style="font-size:0.82rem; font-weight:600; color:#1B5E20; display:block; margin-bottom:6px;">⚡ Atur Semua Santri (Perilaku):</label>
+  <div class="field-row" style="margin-bottom:8px;">
+    <select id="bulk-per"><option value="">Perilaku</option><option value="Sangat baik">Sangat baik</option><option value="Baik">Baik</option><option value="Perlu perhatian">Perlu perhatian</option></select>
+    <select id="bulk-kon"><option value="">Konsentrasi</option><option value="Fokus penuh">Fokus penuh</option><option value="Cukup">Cukup</option></select>
+  </div>
+  <textarea id="bulk-pr" placeholder="PR / Tindak Lanjut" rows="2" style="width:100%; margin-bottom:8px; padding:8px; border:1px solid #d0d5dd; border-radius:6px;"></textarea>
+  <button type="button" onclick="applyBulkPerilaku()" style="width:100%; padding:8px; background:#2E7D32; color:white; border:none; border-radius:6px; cursor:pointer;">✅ Terapkan ke Semua</button>
+</div>
+
+<div id="perilakuInputs" class="santri-inputs"></div>
+</section>
+<!-- TOMBOL AKSI -->
+<div class="action-bar hidden" id="actionBar">
+<button type="button" class="btn btn-secondary" onclick="goToStep1()">← Kembali</button>
+<button type="button" class="btn btn-success" onclick="submitAll()">✅ SUBMIT SEMUA DATA</button>
+</div>
+</div>
+<div id="loading" class="loading-overlay"><span class="spinner"></span> Menyimpan data...</div>
+<div id="notification" class="notification"></div>
+<script>
+let santriHadir = [];
+document.addEventListener('DOMContentLoaded', () => {
+document.getElementById('tanggal').valueAsDate = new Date();
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+});
+function loadSantriList() {
+const kelompok = document.getElementById('kelompok').value;
+const container = document.getElementById('santriList');
+if (!kelompok) { container.innerHTML = '<p class="hint">Pilih Kelompok dulu.</p>'; return; }
+container.innerHTML = '<p class="hint">Memuat data...</p>';
+google.script.run.withSuccessHandler(r => {
+container.innerHTML = r.map(s => `<label class="santri-item"><input type="checkbox" value="${s.id}" data-name="${s.name}" data-level="${s.level}"><span>${s.name}</span><span class="santri-meta">${s.level}</span></label>`).join('');
+}).withFailureHandler(e => container.innerHTML = `<p style="color:red">${e.message}</p>`).getSantriByKelompok(kelompok);
+}
+function goToStep2() {
+const tanggal = document.getElementById('tanggal').value;
+const kelompok = document.getElementById('kelompok').value;
+const ustadz = document.getElementById('namaUstadz').value;
+if (!tanggal || !kelompok || !ustadz) return showNotification('⚠️ Lengkapi Form 1', 'error');
+const checks = document.querySelectorAll('#santriList input:checked');
+if (checks.length === 0) return showNotification('⚠️ Pilih minimal 1 santri', 'error');
+santriHadir = Array.from(checks).map(c => ({ idSantri: c.value, nama: c.dataset.name, level: c.dataset.level }));
+document.getElementById('step1').classList.remove('active');
+document.getElementById('tabNav').classList.remove('hidden');
+document.getElementById('actionBar').classList.remove('hidden');
+generateInputs();
+switchTab('quran');
+}
+function goToStep1() {
+document.getElementById('step1').classList.add('active');
+document.getElementById('tabNav').classList.add('hidden');
+document.getElementById('actionBar').classList.add('hidden');
+document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+}
+function switchTab(name) {
+document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+document.querySelectorAll('.tab-content').forEach(t => t.classList.toggle('active', t.id === `tab-${name}`));
+}
+function generateInputs() {
+// Quran
+document.getElementById('quranInputs').innerHTML = santriHadir.map(s => `
+<div class="santri-card" data-id="${s.idSantri}">
+<div class="card-header"><h4>📖 ${s.nama}</h4><small>${s.level}</small></div>
+<div class="form-group"><label>Program</label><select class="quran-program" onchange="toggleFields(this)"><option value="">-- Pilih --</option><option value="Iqra">Iqra</option><option value="Tahsin">Tahsin</option><option value="Tahfidz">Tahfidz</option><option value="Tilawah">Tilawah</option></select></div>
+<div class="quran-field" id="f-${s.idSantri}"></div>
+<textarea class="catatan-bacaan" placeholder="Catatan bacaan" rows="2"></textarea>
+</div>`).join('');
+// Tarbiyah
+document.getElementById('tarbiyahInputs').innerHTML = santriHadir.map(s => `
+<div class="santri-card" data-id="${s.idSantri}">
+<div class="card-header"><h4>🌱 ${s.nama}</h4><label class="ready-checkbox"><input type="checkbox" class="tarbiyah-ready"> Siap</label></div>
+<div class="tarbiyah-content" style="display:none; margin-top:10px;">
+<div class="form-group"><input class="tar-mod" placeholder="Modul / Tema"></div>
+<div class="field-row"><select class="tar-pah"><option value="">Pemahaman</option><option value="Paham">Paham</option><option value="Belum">Belum</option><option value="N/A">N/A</option></select><select class="tar-res"><option value="">Respons</option><option value="Sangat antusias">Sangat antusias</option><option value="Cukup">Cukup</option><option value="Kurang">Kurang</option></select></div>
+</div>
+</div>`).join('');
+document.querySelectorAll('.tarbiyah-ready').forEach(cb => cb.addEventListener('change', function() {
+this.closest('.santri-card').querySelector('.tarbiyah-content').style.display = this.checked ? 'block' : 'none';
+}));
+// Perilaku
+document.getElementById('perilakuInputs').innerHTML = santriHadir.map(s => `
+<div class="santri-card" data-id="${s.idSantri}">
+<div class="card-header"><h4>✨ ${s.nama}</h4></div>
+<div class="field-row"><select class="perilaku"><option value="">Perilaku</option><option value="Sangat baik">Sangat baik</option><option value="Baik">Baik</option><option value="Perlu perhatian">Perlu perhatian</option></select><select class="konsentrasi"><option value="">Konsentrasi</option><option value="Fokus penuh">Fokus penuh</option><option value="Cukup">Cukup</option></select></div>
+<textarea class="pr-santri" placeholder="Tindak lanjut / PR" rows="2"></textarea>
+</div>`).join('');
+}
+function toggleFields(select) {
+const card = select.closest('.santri-card');
+const id = card.dataset.id;
+const prog = select.value;
+const box = document.getElementById(`f-${id}`);
+let html = '';
+if(prog==='Iqra') html='<div class="field-row"><input class="p" placeholder="Posisi"><input class="t" placeholder="Target"></div><input class="c" placeholder="Capaian">';
+if(prog==='Tahsin') html='<input class="p" placeholder="Surah"><input class="t" placeholder="Fokus Tajwid"><select class="c"><option value="">Nilai</option><option value="Baik">Baik</option><option value="Perlu latihan">Perlu latihan</option></select>';
+if(prog==='Tahfidz') html='<div class="field-row"><input class="p" placeholder="Hafalan s.d."><input class="t" placeholder="Target"></div><input class="c" placeholder="Setor">';
+if(prog==='Tilawah') html='<div class="field-row"><input class="p" placeholder="Juz"><input class="t" placeholder="Hal"></div><input class="c" placeholder="Realisasi">';
+box.innerHTML = html;
+box.classList.toggle('active', !!prog);
+}
+function submitAll() {
+showLoading(true);
+const data = {
+tanggal: document.getElementById('tanggal').value,
+kelompok: document.getElementById('kelompok').value,
+namaUstadz: document.getElementById('namaUstadz').value,
+santriHadir: santriHadir.map(s => collectData(s.idSantri))
+};
+google.script.run.withSuccessHandler(res => {
+showLoading(false);
+showNotification(res.message, res.success ? 'success' : 'error');
+if(res.success) setTimeout(() => { goToStep1(); document.getElementById('kelompok').value=''; document.getElementById('santriList').innerHTML='<p class="hint">Pilih Kelompok...</p>'; }, 2000);
+}).withFailureHandler(err => { showLoading(false); showNotification(`Error: ${err.message}`, 'error'); }).submitDailyLog(data);
+}
+
+// ✅ FIX: collectData sekarang menyertakan 'nama' agar tidak hilang di Sheet
+function collectData(id) {
+const qCard = document.querySelector(`#quranInputs .santri-card[data-id="${id}"]`);
+const tCard = document.querySelector(`#tarbiyahInputs .santri-card[data-id="${id}"]`);
+const pCard = document.querySelector(`#perilakuInputs .santri-card[data-id="${id}"]`);
+const prog = qCard.querySelector('.quran-program').value;
+let p='',t='',c='';
+const inp = qCard.querySelector(`#f-${id}`);
+if(inp) {
+const fields = inp.querySelectorAll('input, select');
+if(fields[0]) p=fields[0].value;
+if(fields[1]) t=fields[1].value;
+if(fields[2]) c=fields[2].value;
+}
+const santri = santriHadir.find(s => s.idSantri === id);
+return {
+idSantri: id, nama: santri ? santri.nama : '', program: prog, posisi: p, target: t, capaian: c,
+catatanBacaan: qCard.querySelector('.catatan-bacaan')?.value || '',
+tarbiyah: tCard.querySelector('.tarbiyah-ready').checked ? { modul: tCard.querySelector('.tar-mod').value, pemahaman: tCard.querySelector('.tar-pah').value, respons: tCard.querySelector('.tar-res').value } : null,
+perilaku: pCard.querySelector('.perilaku').value,
+konsentrasi: pCard.querySelector('.konsentrasi').value,
+pr: pCard.querySelector('.pr-santri').value
+};
+}
+function showLoading(show) { document.getElementById('loading').classList.toggle('visible', show); }
+function showNotification(msg, type) {
+const n = document.getElementById('notification');
+n.textContent = msg; n.className = `notification ${type} visible`;
+setTimeout(() => n.classList.remove('visible'), 4000);
+}
+
+/* ═══════════════════════════════════════
+   ✅ FUNGSI BULK BARU (TIDAK MENGGANGGU KODE LAMA)
+   ═══════════════════════════════════════ */
+function toggleBulkQuranFields(prog) {
+  const box = document.getElementById('bulk-quran-fields');
+  if(!prog) { box.style.display='none'; box.innerHTML=''; return; }
+  box.style.display='grid';
+  let h='';
+  if(prog==='Iqra') h='<input id="bq-p" placeholder="Posisi"><input id="bq-t" placeholder="Target"><input id="bq-c" placeholder="Capaian" style="grid-column:1/-1">';
+  if(prog==='Tahsin') h='<input id="bq-p" placeholder="Surah"><input id="bq-t" placeholder="Fokus Tajwid"><select id="bq-c" style="grid-column:1/-1"><option value="">Nilai</option><option value="Baik">Baik</option><option value="Perlu latihan">Perlu latihan</option></select>';
+  if(prog==='Tahfidz') h='<input id="bq-p" placeholder="Hafalan s.d."><input id="bq-t" placeholder="Target"><input id="bq-c" placeholder="Setor" style="grid-column:1/-1">';
+  if(prog==='Tilawah') h='<input id="bq-p" placeholder="Juz"><input id="bq-t" placeholder="Hal"><input id="bq-c" placeholder="Realisasi" style="grid-column:1/-1">';
+  box.innerHTML=h;
+}
+
+function applyBulkQuran() {
+  const prog = document.getElementById('bulk-quran-prog').value;
+  if(!prog) return showNotification('⚠️ Pilih program dulu','error');
+  const p=document.getElementById('bq-p')?.value||'';
+  const t=document.getElementById('bq-t')?.value||'';
+  const c=document.getElementById('bq-c')?.value||'';
+  document.querySelectorAll('#quranInputs .santri-card').forEach(card=>{
+    const sel=card.querySelector('.quran-program');
+    sel.value=prog; toggleFields(sel);
+    const box=card.querySelector('.quran-field');
+    const f=box.querySelectorAll('input,select');
+    if(f[0])f[0].value=p; if(f[1])f[1].value=t; if(f[2])f[2].value=c;
+  });
+  showNotification('✅ Al-Qur\'an bulk diterapkan.','success');
+}
+
+function applyBulkTarbiyah() {
+  const r=document.getElementById('bulk-tar-ready').checked;
+  const m=document.getElementById('bulk-tar-mod').value;
+  const p=document.getElementById('bulk-tar-pah').value;
+  const rs=document.getElementById('bulk-tar-res').value;
+  document.querySelectorAll('#tarbiyahInputs .santri-card').forEach(card=>{
+    const cb=card.querySelector('.tarbiyah-ready'); cb.checked=r; cb.dispatchEvent(new Event('change'));
+    const con=card.querySelector('.tarbiyah-content');
+    if(con.style.display!=='none'){
+      if(m)con.querySelector('.tar-mod').value=m;
+      if(p)con.querySelector('.tar-pah').value=p;
+      if(rs)con.querySelector('.tar-res').value=rs;
+    }
+  });
+  showNotification('✅ Tarbiyah bulk diterapkan.','success');
+}
+
+function applyBulkPerilaku() {
+  const p=document.getElementById('bulk-per').value;
+  const k=document.getElementById('bulk-kon').value;
+  const pr=document.getElementById('bulk-pr').value;
+  document.querySelectorAll('#perilakuInputs .santri-card').forEach(card=>{
+    if(p)card.querySelector('.perilaku').value=p;
+    if(k)card.querySelector('.konsentrasi').value=k;
+    if(pr)card.querySelector('.pr-santri').value=pr;
+  });
+  showNotification('✅ Perilaku bulk diterapkan.','success');
+}
+</script>
+</body>
+</html>
